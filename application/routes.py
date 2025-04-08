@@ -1,70 +1,74 @@
-from application import app
-from flask import render_template, url_for, request, redirect,flash, get_flashed_messages
-from application.form import UserDataForm
-from application.models import IncomeExpenses, PlantData
-from application import db
-import json
+from flask import render_template, request, jsonify
+from application import app, db
+from datetime import datetime
+from application.models import SensorData
 
 @app.route('/')
-def index():
-    entries = IncomeExpenses.query.order_by(IncomeExpenses.date.desc()).all()
-    return render_template('index.html', entries = entries)
-
-
-@app.route('/add', methods = ["POST", "GET"])
-def add_expense():
-    form = UserDataForm()
-    if form.validate_on_submit():
-        entry = IncomeExpenses(type=form.type.data, category=form.category.data, amount=form.amount.data)
-        db.session.add(entry)
-        db.session.commit()
-        flash(f"{form.type.data} has been added to {form.type.data}s", "success")
-        return redirect(url_for('index'))
-    return render_template('add.html', title="Add expenses", form=form)
-    
-
-
-@app.route('/delete-post/<int:entry_id>')
-def delete(entry_id):
-    entry = IncomeExpenses.query.get_or_404(int(entry_id))
-    db.session.delete(entry)
-    db.session.commit()
-    flash("Entry deleted", "success")
-    return redirect(url_for("index"))
-
-
-@app.route('/dashboard')
-def dashboard():
-    income_vs_expense = db.session.query(db.func.sum(IncomeExpenses.amount), IncomeExpenses.type).group_by(IncomeExpenses.type).order_by(IncomeExpenses.type).all()
-
-    category_comparison = db.session.query(db.func.sum(IncomeExpenses.amount), IncomeExpenses.category).group_by(IncomeExpenses.category).order_by(IncomeExpenses.category).all()
-
-    dates = db.session.query(db.func.sum(IncomeExpenses.amount), IncomeExpenses.date).group_by(IncomeExpenses.date).order_by(IncomeExpenses.date).all()
-
-    income_category = []
-    for amounts, _ in category_comparison:
-        income_category.append(amounts)
-
-    income_expense = []
-    for total_amount, _ in income_vs_expense:
-        income_expense.append(total_amount)
-
-    over_time_expenditure = []
-    dates_label = []
-    for amount, date in dates:
-        dates_label.append(date.strftime("%m-%d-%y"))
-        over_time_expenditure.append(amount)
-
-    return render_template('dashboard.html',
-                            income_vs_expense=json.dumps(income_expense),
-                            income_category=json.dumps(income_category),
-                            over_time_expenditure=json.dumps(over_time_expenditure),
-                            dates_label =json.dumps(dates_label)
-                        )
-
-
-@app.route('/plant')
 def plant():
-    # Get all plant data for overview
-    plants = PlantData.query.all()
-    return render_template('test.html', plants=plants)
+    # Get the latest sensor data from the database
+    latest_data = SensorData.query.order_by(SensorData.timestamp.desc()).first()
+
+    return render_template('dashboard.html', latest_data=latest_data)
+
+@app.route('/data', methods=['POST'])
+def receive_data():
+    data = request.get_json()  # Get data sent by Raspberry Pi
+
+    # Extract data from the incoming JSON payload
+    temp = data.get('temperature')
+    water_level = data.get('water_level')
+    light = data.get('light')
+    dust_density = data.get('dust_density')
+    co = data.get('co')
+    co2 = data.get('co2')
+
+    # Store the data in the database
+    new_data = SensorData(
+        temperature=temp,
+        water_level=water_level,
+        light=light,
+        dust_density=dust_density,
+        co=co,
+        co2=co2,
+        timestamp=datetime.utcnow()
+    )
+    db.session.add(new_data)
+    db.session.commit()
+
+    return jsonify({'status': 'success'}), 200
+
+@app.route('/latest_data', methods=['GET'])
+def latest_data():
+    # Get the latest sensor data from the database
+    latest = SensorData.query.order_by(SensorData.timestamp.desc()).first()
+    
+    if latest:
+        return jsonify({
+            'temperature': f"{latest.temperature:.2f}",
+            'water_level': f"{latest.water_level:.2f}",
+            'light': f"{latest.light:.2f}",
+            'dust_density': f"{latest.dust_density:.2f}",
+            'co': f"{latest.co:.2f}",
+            'co2': f"{latest.co2:.2f}"
+        })
+    else:
+        return jsonify({'error': 'No data available'}), 404
+
+
+from datetime import datetime, timedelta
+
+@app.route('/temperature_data', methods=['GET'])
+def temperature_data():
+    # Calculate the timestamp for 30 minutes ago
+    thirty_minutes_ago = datetime.utcnow() - timedelta(minutes=30)
+    
+    # Query the temperature data for the last 30 minutes
+    data = SensorData.query.filter(SensorData.timestamp >= thirty_minutes_ago).order_by(SensorData.timestamp.asc()).all()
+    
+    # Format data to send to the frontend (time and temperature)
+    temperatures = [{'timestamp': d.timestamp, 'temperature': d.temperature} for d in data]
+    
+    if temperatures:
+        return jsonify(temperatures)
+    else:
+        return jsonify({'error': 'No data available'}), 404

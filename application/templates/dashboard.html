@@ -1,139 +1,346 @@
-{% extends 'layout.html' %}
-{% block content %}
-<div class="col-xs-10 col-sm-6 col-md-6">
-    <div class="card card-style mb-2">
-        <div class="card-body">
-            <div class="chart-container" style="position: relative;">
-                <canvas id="income_vs_expense"></canvas>
-            </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plant Health Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Sidebar and button transition settings */
+    #sidebarContainer {
+      transition: transform 0.5s ease-out, opacity 1s ease-out; /* Slow sliding and fading in */
+      transform: translateX(0%); /* Initially on-screen */
+      opacity: 1; /* Initially visible */
+    }
+
+    #toggleSidebar {
+      transition: left 0.5s ease-out;
+    }
+
+    /* Optionally, you can also smooth the content layout */
+    #mainContent {
+      transition: margin-left 0.5s ease-out;
+    }
+
+    /* Button movement when sidebar is hidden */
+    .sidebar-visible #sidebarContainer {
+      transform: translateX(0); /* Sidebar slides into view */
+      opacity: 1; /* Sidebar becomes visible */
+    }
+
+    .sidebar-hidden #sidebarContainer {
+      transform: translateX(-100%); /* Sidebar slides out of view */
+      opacity: 0; /* Sidebar becomes invisible */
+    }
+    #temperatureBlock {
+      transition: all 0.5s ease-in-out;
+    }
+
+    #temperatureChart {
+      transition: max-height 0.5s ease-in-out;
+      max-height: 0;  /* Initially collapsed */
+      overflow: hidden; /* Prevent content overflow when collapsed */
+    }
+
+    #temperatureBlock.h-auto {
+      height: auto; /* Block expands to its content height */
+    }
+
+    /* Custom class for expanded block */
+    #temperatureBlock.expanded {
+      max-height: 600px;  /* Set a maximum height for the expanded block */
+    }
+
+
+  </style>
+</head>
+<body class="bg-green-100 text-gray-800">
+
+  <!-- Fixed Sidebar Container -->
+  <div id="sidebarContainer" class="fixed top-0 left-0 w-64 h-full">
+    <!-- Sidebar Content -->
+    <aside id="sidebar" class="bg-green-50 h-full p-6 flex flex-col space-y-6 shadow-lg overflow-y-auto">
+      <!-- Tabs -->
+      <div class="flex space-x-2 border-b pb-2">
+        <a href="#dashboard" class="flex-1 text-center py-2 font-semibold text-gray-800 border-b-4 border-green-500">
+          Dashboard
+        </a>
+        <a href="#diseaseDetection" class="flex-1 text-center py-2 font-semibold text-gray-500 hover:text-gray-800">
+          Disease Detection
+        </a>
+      </div>
+      <!-- About Section -->
+      <section>
+        <h2 class="text-xl font-semibold text-gray-800">Plant Health Monitor System</h2>
+        <p class="mt-2 text-sm text-gray-600">
+          Monitor and manage your plant data in real time. Check growth statistics, view upcoming analyses,
+          and explore detailed activity logs.
+        </p>
+      </section>
+      <!-- Disease Types Section -->
+      <section>
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">Disease Types</h2>
+        <div class="space-y-2 text-sm">
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Bacterial</summary>
+            <p class="mt-1 text-gray-600">
+              Bacterial diseases cause spots and lesions on lettuce leaves due to bacterial infection.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Downy</summary>
+            <p class="mt-1 text-gray-600">
+              Downy mildew appears as a fuzzy, discolored growth on the underside of leaves.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Fungal</summary>
+            <p class="mt-1 text-gray-600">
+              Fungal diseases are marked by moldy growth and discoloration on leaves.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Healthy</summary>
+            <p class="mt-1 text-gray-600">
+              Healthy lettuce shows vibrant, green leaves free from disease symptoms.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Powdery</summary>
+            <p class="mt-1 text-gray-600">
+              Powdery mildew is characterized by a white, powdery coating on the leaf surface.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Septoria</summary>
+            <p class="mt-1 text-gray-600">
+              Septoria leaf spot presents as small, circular spots with dark borders on the leaves.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Unhealthy</summary>
+            <p class="mt-1 text-gray-600">
+              Unhealthy leaves may show discoloration, wilting, or other stress signs.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Viral</summary>
+            <p class="mt-1 text-gray-600">
+              Viral infections often lead to mottled, deformed, or stunted leaves.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Wilt</summary>
+            <p class="mt-1 text-gray-600">
+              Wilt is indicated by drooping, water-soaked tissues and loss of firmness in leaves.
+            </p>
+          </details>
         </div>
+      </section>
+    </aside>
+  </div>
+  
+  <!-- Toggle Button (Fixed) -->
+  <button id="toggleSidebar" class="fixed top-1/2 bg-green-600 text-white p-2 rounded-r focus:outline-none opacity-50 hover:opacity-100"
+          style="left: 256px; transform: translateY(-50%);">
+    ☰
+  </button>
+  
+  <!-- Main Content (offset by sidebar width when sidebar is visible) -->
+  <main id="mainContent" class="ml-64 p-0 space-y-8">
+    <!-- Hero / Heading Section with Background Image -->
+    <div class="relative h-64 w-full bg-cover bg-center" style="background-image: url('https://eda.show/content/images/2022/09/scale_1200--27--7.jpg');">
+      <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+      <div class="relative h-full flex items-center justify-center">
+        <h1 class="text-4xl font-bold text-white">Good Morning, PlantHealthDashboard</h1>
+      </div>
     </div>
-</div>
+    
+    <!-- Additional Content -->
+    <div class="px-6">
+      <p class="text-xl text-gray-700 my-6">Explore your plant's data and insights.</p>
+      
+      <!-- Display Sensor Data Blocks -->
+      <div class="grid grid-cols-3 gap-6 mb-8">
+        <!-- Temperature Block -->
+        <div class="bg-white rounded-lg shadow-md p-6" id="temperatureBlock">
+          <h2 class="text-xl font-semibold">Temperature</h2>
+          <p class="mt-2" id="temperature">{{ latest_data.temperature }} °C</p>
+          <button class="mt-4 text-green-600 hover:text-green-800" id="showChartButtonTemperature">Show Chart</button>
 
-<div class="col-xs-10 col-sm-6 col-md-6">
-    <div class="card card-style mb-2">
-        <div class="card-body">
-            <div class="chart-container" style="position: relative;">
-                <canvas id="income_vs_category"></canvas>
-            </div>
+          <!-- Hidden chart container (Initially hidden) -->
+          <div id="temperatureChart" class="hidden mt-4 transition-all duration-500 ease-in-out max-h-0 overflow-hidden">
+            <canvas id="temperatureChartCanvas"></canvas>
+          </div>
         </div>
-    </div>
-</div>
 
-<div class="col-xs-10 col-sm-6 col-md-6">
-    <div class="card card-style mb-2">
-        <div class="card-body">
-            <div class="chart-container" style="position: relative;">
-                <canvas id="overtime_expenditure"></canvas>
-            </div>
+
+        <!-- Water Level Block -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold">Water Level</h2>
+          <p class="mt-2" id="water_level">{{ latest_data.water_level }} %</p>
         </div>
+
+        <!-- Light Block -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold">Light</h2>
+          <p class="mt-2" id="light">{{ latest_data.light }} lux</p>
+        </div>
+
+        <!-- Dust Density Block -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold">Dust Density</h2>
+          <p class="mt-2" id="dust_density">{{ latest_data.dust_density }} µg/m³</p>
+        </div>
+
+        <!-- CO Block -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold">CO</h2>
+          <p class="mt-2" id="co">{{ latest_data.co }} ppm</p>
+        </div>
+
+        <!-- CO2 Block -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <h2 class="text-xl font-semibold">CO2</h2>
+          <p class="mt-2" id="co2">{{ latest_data.co2 }} ppm</p>
+        </div>
+
+      </div>
     </div>
-</div>
-
-{% block javascript %}
-<script>
-    let income_vs_expense_data = JSON.parse({{ income_vs_expense | tojson }})
-    let income_category_data = JSON.parse({{ income_category | tojson}})
-
-    Chart.scaleService.updateScaleDefaults('linear', {
-            ticks: {
-                min: 0
-            }
+  </main>
+  
+  
+  <script>
+    // Get elements
+    var toggleButton = document.getElementById('toggleSidebar');
+    var sidebarContainer = document.getElementById('sidebarContainer');
+    var mainContent = document.getElementById('mainContent');
+    
+    // When clicking the button, toggle sidebar visibility and update layouts.
+    toggleButton.addEventListener('click', function() {
+      if (sidebarContainer.style.transform === 'translateX(0%)') {
+        // Sidebar is visible: hide the sidebar
+        sidebarContainer.style.transform = 'translateX(-100%)';
+        sidebarContainer.style.opacity = '0';
+        mainContent.classList.remove('ml-64');
+        toggleButton.style.left = '0px';  // Move button to the left
+      } else {
+        // Sidebar is hidden: show the sidebar slowly
+        sidebarContainer.style.transform = 'translateX(0%)';
+        sidebarContainer.style.opacity = '1';
+        mainContent.classList.add('ml-64');
+        toggleButton.style.left = '256px';  // Move button to the right
+      }
     });
+    document.getElementById('showChartButtonTemperature').addEventListener('click', function() {
+    const chartContainer = document.getElementById('temperatureChart');
+    const temperatureBlock = document.getElementById('temperatureBlock');
 
+    // Toggle visibility and size
+    if (chartContainer.classList.contains('hidden')) {
+      // Fetch the temperature data for the last 30 minutes if not already fetched
+      fetch('/temperature_data')
+        .then(response => response.json())
+        .then(data => {
+          // Prepare data for the chart
+          const timestamps = data.map(entry => new Date(entry.timestamp));
+          const temperatures = data.map(entry => entry.temperature);
 
-    let income_vs_expense_chart = new Chart(income_vs_expense, {
-            type: 'pie',
-            data: {
-            labels: ['expense', 'income'],
+          // Create the chart if it's not already created
+          if (!chartContainer.chart) {
+            const ctx = document.getElementById('temperatureChartCanvas').getContext('2d');
+            chartContainer.chart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: timestamps,
                 datasets: [{
-                    label: "Income Vs Expenses",
-                    data: income_vs_expense_data,
-                    backgroundColor: ['#5DA5DA ', '#FAA43A', '#60BD68',
-                        '#B276B2', '#E16851', '#FB8267'],
-
-                    borderWidth: 1,
-                    hoverBorderColor: "black",
-                    hoverBorderWidth: 2,
-                    hoverBackgroundColor: 'rgba(154, 245, 140)',
-                    pointHoverRadius: 5
-                }],
-            },
-            options: {
-                    title: {
-                        display: true,
-                            text: "Income Vs Expenses",
-                                fontSize: 20,
-                    },
-                    legend: {
-                        position: "right",
-                            labels: {
-                            fontColor: "gray"
-                        },
-                        display: true,
-                    },
-
-                    elements: {
-                        hitRadius: 3,
+                  label: 'Temperature (°C)',
+                  data: temperatures,
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                  fill: true,
+                }]
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  x: {
+                    type: 'time',
+                    time: {
+                      unit: 'minute',
+                      tooltipFormat: 'll HH:mm'
                     }
-            }
-        })
-
-    let income_vs_category_chart = new Chart(income_vs_category, {
-            type: 'bar',
-            data: {
-                labels: ['investment', 'rent', 'salary', 'side_hustle'],
-                datasets: [{
-                    label: "Categories Of Income",
-                    data: income_category_data,
-            backgroundColor: ['#5DA5DA ', '#FAA43A', '#60BD68',
-                '#B276B2', '#E16851', '#FB8267'],
-            borderWidth: 1,
-            hoverBorderColor: "black",
-            hoverBorderWidth: 2,
-            hoverBackgroundColor: 'rgba(154, 245, 140)',
-            pointHoverRadius: 5
-        }],
-            },
-        options: {
-                title: {
-                    display: true,
-                        text: "Income Categories",
-                            fontSize: 20,
-            },
-                legend: {
-                    position: "right",
-                        labels: {
-                        fontColor: "gray"
-                    },
-                    display: true,
-            },
-
-                elements: {
-                    hitRadius: 3,
-            }
-            }
-        })
-        over_time_expenditure = JSON.parse({{over_time_expenditure | tojson}})
-        labels = JSON.parse({{ dates_label  | tojson}})
-
-        new Chart(document.getElementById("overtime_expenditure"), {
-                type: "line",
-                data:
-                {
-                    labels: labels,
-                    datasets: [{
-                        label: "Expenditure Over Time",
-                        
-                        data: over_time_expenditure,
-                        fill: false,
-                        borderColor: "rgb(75, 192, 192)",
-                        lineTension: 0.1
-                    }]
-                },
-                options: {}
+                  },
+                  y: {
+                    ticks: {
+                      beginAtZero: false,
+                      stepSize: 5,
+                    }
+                  }
+                }
+              }
             });
-</script>
-{% endblock%}
+          }
+        })
+        .catch(error => console.error('Error fetching temperature data:', error));
+    }
 
-{% endblock %}
+    // Toggle visibility of chart
+    chartContainer.classList.toggle('hidden');
+    // Adjust block size for expansion
+    temperatureBlock.classList.toggle('h-auto');
+    temperatureBlock.classList.toggle('max-h-[600px]');  // Add a specific max height when expanded
+  });
+
+
+  // Function to fetch and update sensor data
+  function updateSensorData() {
+    fetch('/latest_data')
+      .then(response => response.json())
+      .then(data => {
+        // Format and update the DOM elements with the new data
+        if (data.temperature) {
+          document.getElementById('temperature').textContent = `${parseFloat(data.temperature).toFixed(2)} °C`;
+        }
+        if (data.water_level) {
+          document.getElementById('water_level').textContent = `${parseFloat(data.water_level).toFixed(2)} %`;
+        }
+        if (data.light) {
+          document.getElementById('light').textContent = `${parseFloat(data.light).toFixed(2)} lux`;
+        }
+        if (data.dust_density) {
+          document.getElementById('dust_density').textContent = `${parseFloat(data.dust_density).toFixed(2)} µg/m³`;
+        }
+        if (data.co) {
+          document.getElementById('co').textContent = `${parseFloat(data.co).toFixed(2)} ppm`;
+        }
+        if (data.co2) {
+          document.getElementById('co2').textContent = `${parseFloat(data.co2).toFixed(2)} ppm`;
+        }
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }
+
+
+  // Set an interval to update the data every 5 seconds
+  setInterval(updateSensorData, 1000);
+
+  </script>
+</body>
+</html>
