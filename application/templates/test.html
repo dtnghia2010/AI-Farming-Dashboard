@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plant Health Dashboard</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Sidebar and button transition settings */
+    #sidebarContainer {
+      transition: transform 0.5s ease-out, opacity 1s ease-out; /* Slow sliding and fading in */
+      transform: translateX(0%); /* Initially on-screen */
+      opacity: 1; /* Initially visible */
+    }
+
+    #toggleSidebar {
+      transition: left 0.5s ease-out;
+    }
+
+    /* Optionally, you can also smooth the content layout */
+    #mainContent {
+      transition: margin-left 0.5s ease-out;
+    }
+
+    /* Button movement when sidebar is hidden */
+    .sidebar-visible #sidebarContainer {
+      transform: translateX(0); /* Sidebar slides into view */
+      opacity: 1; /* Sidebar becomes visible */
+    }
+
+    .sidebar-hidden #sidebarContainer {
+      transform: translateX(-100%); /* Sidebar slides out of view */
+      opacity: 0; /* Sidebar becomes invisible */
+    }
+  </style>
+</head>
+<body class="bg-green-100 text-gray-800">
+
+  <!-- Fixed Sidebar Container -->
+  <div id="sidebarContainer" class="fixed top-0 left-0 w-64 h-full">
+    <!-- Sidebar Content -->
+    <aside id="sidebar" class="bg-green-50 h-full p-6 flex flex-col space-y-6 shadow-lg overflow-y-auto">
+      <!-- Tabs -->
+      <div class="flex space-x-2 border-b pb-2">
+        <a href="#dashboard" class="flex-1 text-center py-2 font-semibold text-gray-800 border-b-4 border-green-500">
+          Dashboard
+        </a>
+        <a href="#diseaseDetection" class="flex-1 text-center py-2 font-semibold text-gray-500 hover:text-gray-800">
+          Disease Detection
+        </a>
+      </div>
+      <!-- About Section -->
+      <section>
+        <h2 class="text-xl font-semibold text-gray-800">Plant Health Monitor System</h2>
+        <p class="mt-2 text-sm text-gray-600">
+          Monitor and manage your plant data in real time. Check growth statistics, view upcoming analyses,
+          and explore detailed activity logs.
+        </p>
+      </section>
+      <!-- Disease Types Section -->
+      <section>
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">Disease Types</h2>
+        <div class="space-y-2 text-sm">
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Bacterial</summary>
+            <p class="mt-1 text-gray-600">
+              Bacterial diseases cause spots and lesions on lettuce leaves due to bacterial infection.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Downy</summary>
+            <p class="mt-1 text-gray-600">
+              Downy mildew appears as a fuzzy, discolored growth on the underside of leaves.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Fungal</summary>
+            <p class="mt-1 text-gray-600">
+              Fungal diseases are marked by moldy growth and discoloration on leaves.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Healthy</summary>
+            <p class="mt-1 text-gray-600">
+              Healthy lettuce shows vibrant, green leaves free from disease symptoms.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Powdery</summary>
+            <p class="mt-1 text-gray-600">
+              Powdery mildew is characterized by a white, powdery coating on the leaf surface.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Septoria</summary>
+            <p class="mt-1 text-gray-600">
+              Septoria leaf spot presents as small, circular spots with dark borders on the leaves.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Unhealthy</summary>
+            <p class="mt-1 text-gray-600">
+              Unhealthy leaves may show discoloration, wilting, or other stress signs.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Viral</summary>
+            <p class="mt-1 text-gray-600">
+              Viral infections often lead to mottled, deformed, or stunted leaves.
+            </p>
+          </details>
+          <details class="bg-green-50 p-2 rounded">
+            <summary class="cursor-pointer font-bold">Wilt</summary>
+            <p class="mt-1 text-gray-600">
+              Wilt is indicated by drooping, water-soaked tissues and loss of firmness in leaves.
+            </p>
+          </details>
+        </div>
+      </section>
+    </aside>
+  </div>
+  
+  <!-- Toggle Button (Fixed) -->
+  <button id="toggleSidebar" class="fixed top-1/2 bg-green-600 text-white p-2 rounded-r focus:outline-none opacity-50 hover:opacity-100"
+          style="left: 256px; transform: translateY(-50%);">
+    ☰
+  </button>
+  
+  <!-- Main Content (offset by sidebar width when sidebar is visible) -->
+  <main id="mainContent" class="ml-64 p-0 space-y-8">
+    <!-- Hero / Heading Section with Background Image -->
+    <div class="relative h-64 w-full bg-cover bg-center" style="background-image: url('https://eda.show/content/images/2022/09/scale_1200--27--7.jpg');">
+      <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+      <div class="relative h-full flex items-center justify-center">
+        <h1 class="text-4xl font-bold text-white">Good Morning, PlantHealthDashboard</h1>
+      </div>
+    </div>
+    
+    <!-- Additional Content -->
+    <div class="px-6">
+      <p class="text-xl text-gray-700 my-6">Explore your plant's data and insights.</p>
+      
+      <!-- Actions and Stats -->
+      <div class="grid grid-cols-3 gap-6 mb-8">
+        <button class="bg-gray-200 rounded-lg py-4 text-center shadow-md hover:bg-gray-300 transition duration-200">
+          <span class="material-icons">settings</span>
+          <p class="mt-2">Settings</p>
+        </button>
+        <div class="bg-gray-200 rounded-lg py-6 text-center shadow-md">
+          <p>Upcoming analysis</p>
+          <p>Current week</p>
+        </div>
+        <div class="bg-gray-200 rounded-lg py-6 text-center shadow-md">
+          <p>Scheduled checkup</p>
+          <p>Current week</p>
+        </div>
+      </div>
+      
+      <!-- Tasks and Calendar -->
+      <div class="flex space-x-6 mb-8">
+        <div class="w-1/2 bg-gray-100 rounded-lg p-6 shadow-md">
+          <h2 class="font-bold text-xl mb-4">My Tasks</h2>
+          <ul class="space-y-4">
+            <li class="flex justify-between">
+              <p>Plant Id: Troubleshooting plant issues</p>
+              <span class="text-red-600 font-semibold">Critical</span>
+            </li>
+            <li class="flex justify-between">
+              <p>Plant: Check plant health</p>
+              <span class="text-yellow-600 font-semibold">Not Critical</span>
+            </li>
+            <li class="flex justify-between">
+              <p>Plant: Weekly plant care routine</p>
+              <span class="text-red-600 font-semibold">Critical task</span>
+            </li>
+          </ul>
+          <button class="bg-blue-500 text-white mt-6 py-2 px-4 rounded-lg hover:bg-blue-400 transition duration-200">
+            View all alerts
+          </button>
+        </div>
+        <div class="w-1/2 bg-gray-100 rounded-lg p-6 shadow-md">
+          <h2 class="font-bold text-xl mb-4">Plant Care Calendar</h2>
+          <div class="flex justify-between mb-4">
+            <span>Dec</span>
+            <span class="text-xl font-semibold text-blue-600">2</span>
+            <span>3</span>
+          </div>
+          <ul class="space-y-4">
+            <li class="flex justify-between">
+              <span class="font-semibold">05</span>
+              <p>Fertilization reminder</p>
+              <span>10:00-11:00</span>
+            </li>
+            <li class="flex justify-between">
+              <span class="font-semibold">06</span>
+              <p>Pest inspection</p>
+              <span>09:00-10:00</span>
+            </li>
+            <li class="flex justify-between">
+              <span class="font-semibold">07</span>
+              <p>New plant growth</p>
+              <span>08:00-08:30</span>
+            </li>
+            <li class="flex justify-between">
+              <span class="font-semibold">08</span>
+              <p>Leaf discoloration check</p>
+              <span>14:00-15:00</span>
+            </li>
+            <li class="flex justify-between">
+              <span class="font-semibold">09</span>
+              <p>Root health check</p>
+              <span>12:00-12:30</span>
+            </li>
+          </ul>
+          <button class="bg-blue-500 text-white mt-6 py-2 px-4 rounded-lg hover:bg-blue-400 transition duration-200">
+            View full data
+          </button>
+        </div>
+      </div>
+      
+      <!-- Growth Statistics -->
+      <div class="bg-gray-100 rounded-lg p-6 shadow-md">
+        <h2 class="font-bold text-xl mb-4">Plant Growth Statistics</h2>
+        <div class="flex space-x-4">
+          <div class="w-1/8 bg-blue-500 h-20 rounded"></div>
+          <div class="w-1/8 bg-blue-500 h-20 rounded"></div>
+          <div class="w-1/8 bg-blue-500 h-20 rounded"></div>
+          <div class="w-1/8 bg-blue-500 h-20 rounded"></div>
+          <div class="w-1/8 bg-blue-500 h-20 rounded"></div>
+          <div class="w-1/8 bg-blue-500 h-20 rounded"></div>
+          <div class="w-1/8 bg-blue-500 h-20 rounded"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <script>
+    // Get elements
+    var toggleButton = document.getElementById('toggleSidebar');
+    var sidebarContainer = document.getElementById('sidebarContainer');
+    var mainContent = document.getElementById('mainContent');
+    
+    // When clicking the button, toggle sidebar visibility and update layouts.
+    toggleButton.addEventListener('click', function() {
+      if (sidebarContainer.style.transform === 'translateX(0%)') {
+        // Sidebar is visible: hide the sidebar
+        sidebarContainer.style.transform = 'translateX(-100%)';
+        sidebarContainer.style.opacity = '0';
+        mainContent.classList.remove('ml-64');
+        toggleButton.style.left = '0px';  // Move button to the left
+      } else {
+        // Sidebar is hidden: show the sidebar slowly
+        sidebarContainer.style.transform = 'translateX(0%)';
+        sidebarContainer.style.opacity = '1';
+        mainContent.classList.add('ml-64');
+        toggleButton.style.left = '256px';  // Move button to the right
+      }
+    });
+  </script>
+</body>
+</html>
