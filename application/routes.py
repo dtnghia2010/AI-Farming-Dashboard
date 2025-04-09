@@ -1,14 +1,13 @@
-from flask import Flask, render_template, request, jsonify
+from flask import render_template, request, jsonify
 from datetime import datetime, timedelta
-from application import app, db
+from application import app, db  # Import app and db from __init__.py
 from application.models import SensorData
 
-# Initialize Flask app
-app = Flask(__name__)
-
 @app.route('/')
-def hello_world():
-    return jsonify(message="Hello, world!")
+def plant():
+    # Get the latest sensor data from the database
+    latest_data = SensorData.query.order_by(SensorData.timestamp.desc()).first()
+    return render_template('dashboard.html', latest_data=latest_data)
 
 @app.route('/data', methods=['POST'])
 def receive_data():

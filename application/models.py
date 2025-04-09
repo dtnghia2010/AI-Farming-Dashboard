@@ -13,5 +13,4 @@ class SensorData(db.Model):
     def __repr__(self):
         return f'<SensorData {self.temperature}, {self.water_level}, {self.light}, {self.dust_density}, {self.co}, {self.co2}>'
 
-with app.app_context():
-    db.create_all()  
+
