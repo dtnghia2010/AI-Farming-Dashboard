@@ -1,24 +1,27 @@
-from flask import render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify
+from datetime import datetime, timedelta
 from application import app, db
-from datetime import datetime
 from application.models import SensorData
 
-@app.route('/')
-def plant():
-    # Get the latest sensor data from the database
-    latest_data = SensorData.query.order_by(SensorData.timestamp.desc()).first()
+# Initialize Flask app
+app = Flask(__name__)
 
-    return render_template('dashboard.html', latest_data=latest_data)
+@app.route('/')
+def hello_world():
+    return jsonify(message="Hello, world!")
 
 @app.route('/data', methods=['POST'])
 def receive_data():
     data = request.get_json()  # Get data sent by Raspberry Pi
 
+    # Print the incoming data for debugging
+    print(f"Received data: {data}")
+
     # Extract data from the incoming JSON payload
-    temp = data.get('temperature')
-    water_level = data.get('water_level')
-    light = data.get('light')
-    dust_density = data.get('dust_density')
+    temp = data.get('temp')
+    water_level = data.get('wtlv')
+    light = data.get('lux')
+    dust_density = data.get('dust')
     co = data.get('co')
     co2 = data.get('co2')
 
@@ -53,9 +56,6 @@ def latest_data():
         })
     else:
         return jsonify({'error': 'No data available'}), 404
-
-
-from datetime import datetime, timedelta
 
 @app.route('/temperature_data', methods=['GET'])
 def temperature_data():
