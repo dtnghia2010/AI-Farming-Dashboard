@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Plant Health Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -177,17 +179,13 @@
       <p class="text-xl text-gray-700 my-6">Explore your plant's data and insights.</p>
       
       <!-- Display Sensor Data Blocks -->
-      <div class="grid grid-cols-3 gap-6 mb-8">
-        <!-- Temperature Block -->
-        <div class="bg-white rounded-lg shadow-md p-6" id="temperatureBlock">
-          <h2 class="text-xl font-semibold">Temperature</h2>
-          <p class="mt-2" id="temperature">{{ latest_data.temperature }} °C</p>
-          <button class="mt-4 text-green-600 hover:text-green-800" id="showChartButtonTemperature">Show Chart</button>
-
-          <!-- Hidden chart container (Initially hidden) -->
-          <div id="temperatureChart" class="hidden mt-4 transition-all duration-500 ease-in-out max-h-0 overflow-hidden">
-            <canvas id="temperatureChartCanvas"></canvas>
-          </div>
+      <div class="grid grid-cols-1 gap-6 mb-8">
+        <div class="bg-white rounded-lg shadow-md p-6 h-auto">
+            <h2 class="text-xl font-semibold">Temperature</h2>
+            <p class="mt-2" id="temperature">{{ latest_data.temperature }} °C</p>
+            <div class="mt-4">
+                <canvas id="temperatureChartCanvas"></canvas>
+            </div>
         </div>
 
 
@@ -195,38 +193,50 @@
         <div class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-xl font-semibold">Water Level</h2>
           <p class="mt-2" id="water_level">{{ latest_data.water_level }} %</p>
+            <div class="mt-4">
+                <canvas id="waterLevelChartCanvas"></canvas>
+            </div>
         </div>
 
         <!-- Light Block -->
         <div class="bg-white rounded-lg shadow-md p-6">
           <h2 class="text-xl font-semibold">Light</h2>
           <p class="mt-2" id="light">{{ latest_data.light }} lux</p>
+          <div class="mt-4">
+              <canvas id="lightChartCanvas"></canvas>
+          </div>
         </div>
-
-        <!-- Dust Density Block -->
+        
         <div class="bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-xl font-semibold">Dust Density</h2>
-          <p class="mt-2" id="dust_density">{{ latest_data.dust_density }} µg/m³</p>
+            <h2 class="text-xl font-semibold">Dust Density</h2>
+            <p class="mt-2" id="dust_density">{{ latest_data.dust_density }} µg/m³</p>
+            <div class="mt-4">
+                <canvas id="dustDensityChartCanvas"></canvas>
+            </div>
         </div>
-
-        <!-- CO Block -->
+        
         <div class="bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-xl font-semibold">CO</h2>
-          <p class="mt-2" id="co">{{ latest_data.co }} ppm</p>
+            <h2 class="text-xl font-semibold">CO</h2>
+            <p class="mt-2" id="co">{{ latest_data.co }} ppm</p>
+            <div class="mt-4">
+                <canvas id="coChartCanvas"></canvas>
+            </div>
         </div>
-
-        <!-- CO2 Block -->
+        
         <div class="bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-xl font-semibold">CO2</h2>
-          <p class="mt-2" id="co2">{{ latest_data.co2 }} ppm</p>
+            <h2 class="text-xl font-semibold">CO2</h2>
+            <p class="mt-2" id="co2">{{ latest_data.co2 }} ppm</p>
+            <div class="mt-4">
+                <canvas id="co2ChartCanvas"></canvas>
+            </div>
         </div>
-
       </div>
     </div>
   </main>
   
   
   <script>
+    
     // Get elements
     var toggleButton = document.getElementById('toggleSidebar');
     var sidebarContainer = document.getElementById('sidebarContainer');
@@ -248,65 +258,311 @@
         toggleButton.style.left = '256px';  // Move button to the right
       }
     });
-    document.getElementById('showChartButtonTemperature').addEventListener('click', function() {
-    const chartContainer = document.getElementById('temperatureChart');
-    const temperatureBlock = document.getElementById('temperatureBlock');
 
-    // Toggle visibility and size
-    if (chartContainer.classList.contains('hidden')) {
-      // Fetch the temperature data for the last 30 minutes if not already fetched
-      fetch('/temperature_data')
-        .then(response => response.json())
-        .then(data => {
-          // Prepare data for the chart
-          const timestamps = data.map(entry => new Date(entry.timestamp));
-          const temperatures = data.map(entry => entry.temperature);
+    // ... (previous JavaScript code) ...
 
-          // Create the chart if it's not already created
-          if (!chartContainer.chart) {
-            const ctx = document.getElementById('temperatureChartCanvas').getContext('2d');
-            chartContainer.chart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: timestamps,
-                datasets: [{
-                  label: 'Temperature (°C)',
-                  data: temperatures,
-                  borderColor: 'rgba(75, 192, 192, 1)',
-                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                  fill: true,
-                }]
-              },
-              options: {
-                responsive: true,
-                scales: {
-                  x: {
-                    type: 'time',
-                    time: {
-                      unit: 'minute',
-                      tooltipFormat: 'll HH:mm'
-                    }
-                  },
-                  y: {
-                    ticks: {
-                      beginAtZero: false,
-                      stepSize: 5,
-                    }
-                  }
+    // Function to draw the Temperature Chart
+    function drawTemperatureChart() {
+        const chartCanvas = document.getElementById('temperatureChartCanvas');
+        const ctx = chartCanvas.getContext('2d');
+
+        fetch('/temperature_data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching temperature data:', data.error);
+                    return;
                 }
-              }
-            });
-          }
-        })
-        .catch(error => console.error('Error fetching temperature data:', error));
+
+                // Prepare data for the chart
+                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
+                const temperatures = data.map(entry => entry.temperature);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: timestamps,
+                        datasets: [{
+                            label: 'Temperature (°C)',
+                            data: temperatures,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute',
+                                    tooltipFormat: 'll HH:mm'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    beginAtZero: false,
+                                    stepSize: 5,
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching temperature data:', error));
     }
 
-    // Toggle visibility of chart
-    chartContainer.classList.toggle('hidden');
-    // Adjust block size for expansion
-    temperatureBlock.classList.toggle('h-auto');
-    temperatureBlock.classList.toggle('max-h-[600px]');  // Add a specific max height when expanded
-  });
+ 
+    function drawWaterLevelChart() {
+        const chartCanvas = document.getElementById('waterLevelChartCanvas');
+        const ctx = chartCanvas.getContext('2d');
+
+        fetch('/water_level_data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching water level data:', data.error);
+                    return;
+                }
+
+                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
+                const waterLevels = data.map(entry => entry.water_level);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: timestamps,
+                        datasets: [{
+                            label: 'Water Level (%)',
+                            data: waterLevels,
+                            borderColor: 'rgba(54, 162, 235, 1)', // Blue color
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute',
+                                    tooltipFormat: 'll HH:mm'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                max: 100, // Assuming water level is a percentage
+                                ticks: {
+                                    stepSize: 10
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching water level data:', error));
+    }
+
+    function drawLightChart() {
+        const chartCanvas = document.getElementById('lightChartCanvas');
+        const ctx = chartCanvas.getContext('2d');
+
+        fetch('/light_data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching light data:', data.error);
+                    return;
+                }
+
+                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
+                const lightLevels = data.map(entry => entry.light);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: timestamps,
+                        datasets: [{
+                            label: 'Light (lux)',
+                            data: lightLevels,
+                            borderColor: 'rgba(255, 206, 86, 1)', // Yellow color
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute',
+                                    tooltipFormat: 'll HH:mm'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching light data:', error));
+    }
+
+    // Function to draw the Dust Density Chart
+    function drawDustDensityChart() {
+        const chartCanvas = document.getElementById('dustDensityChartCanvas');
+        const ctx = chartCanvas.getContext('2d');
+
+        fetch('/dust_density_data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching dust density data:', data.error);
+                    return;
+                }
+
+                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
+                const dustDensities = data.map(entry => entry.dust_density);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: timestamps,
+                        datasets: [{
+                            label: 'Dust Density (µg/m³)',
+                            data: dustDensities,
+                            borderColor: 'rgba(153, 102, 255, 1)', // Purple color
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute',
+                                    tooltipFormat: 'll HH:mm'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching dust density data:', error));
+    }
+
+    // Function to draw the CO Chart
+    function drawCOChart() {
+        const chartCanvas = document.getElementById('coChartCanvas');
+        const ctx = chartCanvas.getContext('2d');
+
+        fetch('/co_data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching CO data:', data.error);
+                    return;
+                }
+
+                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
+                const coLevels = data.map(entry => entry.co);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: timestamps,
+                        datasets: [{
+                            label: 'CO (ppm)',
+                            data: coLevels,
+                            borderColor: 'rgba(255, 99, 132, 1)', // Red color
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute',
+                                    tooltipFormat: 'll HH:mm'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching CO data:', error));
+    }
+
+    // Function to draw the CO2 Chart
+    function drawCO2Chart() {
+        const chartCanvas = document.getElementById('co2ChartCanvas');
+        const ctx = chartCanvas.getContext('2d');
+
+        fetch('/co2_data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error fetching CO2 data:', data.error);
+                    return;
+                }
+
+                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
+                const co2Levels = data.map(entry => entry.co2);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: timestamps,
+                        datasets: [{
+                            label: 'CO2 (ppm)',
+                            data: co2Levels,
+                            borderColor: 'rgba(75, 192, 192, 1)', // Teal color
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'minute',
+                                    tooltipFormat: 'll HH:mm'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching CO2 data:', error));
+    }
+
+    // Call the functions to draw the charts on page load
+    drawTemperatureChart();
+    drawWaterLevelChart();
+    drawLightChart();
+    drawDustDensityChart();
+    drawCOChart();
+    drawCO2Chart();
 
 
   // Function to fetch and update sensor data
