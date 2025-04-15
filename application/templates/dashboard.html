@@ -26,59 +26,61 @@
 
     /* Sidebar and button transition settings */
     #sidebarContainer {
-      transition: transform 0.5s ease-out, opacity 1s ease-out; /* Slow sliding and fading in */
-      transform: translateX(0%); /* Initially on-screen */
-      opacity: 1; /* Initially visible */
+      transition: transform 0.5s ease-out, opacity 1s ease-out;
+      transform: translateX(0%);
+      opacity: 1;
     }
-
     #toggleSidebar {
       transition: left 0.5s ease-out;
+      position: fixed;
+      top: 20px; /* Adjust this value to control the top position */
+      left: 256px;
+      background-color: #38a169; /* Green color */
+      color: white;
+      padding: 12px;
+      border-radius: 20%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      opacity: 70%;
+      cursor: pointer;
+      z-index: 9999;
     }
 
-    /* Optionally, you can also smooth the content layout */
+    #toggleSidebar:hover {
+      opacity: 100%;
+    }
+
     #mainContent {
       transition: margin-left 0.5s ease-out;
     }
-
-    /* Button movement when sidebar is hidden */
     .sidebar-visible #sidebarContainer {
-      transform: translateX(0); /* Sidebar slides into view */
-      opacity: 1; /* Sidebar becomes visible */
+      transform: translateX(0);
+      opacity: 1;
     }
-
     .sidebar-hidden #sidebarContainer {
-      transform: translateX(-100%); /* Sidebar slides out of view */
-      opacity: 0; /* Sidebar becomes invisible */
+      transform: translateX(-100%);
+      opacity: 0;
     }
-    #temperatureBlock {
-      transition: all 0.5s ease-in-out;
+    
+    /* Chart container styling for all data blocks */
+    .chart-container {
+      width: 100%;
+      max-width: none;
+      height: 300px;
+      margin: 0 auto;
+      padding: 0;
     }
-
-    #temperatureChart {
-      transition: max-height 0.5s ease-in-out;
-      max-height: 0;  /* Initially collapsed */
-      overflow: hidden; /* Prevent content overflow when collapsed */
+    @media (max-width: 768px) {
+      .chart-container {
+        height: 250px;
+      }
     }
-
-    #temperatureBlock.h-auto {
-      height: auto; /* Block expands to its content height */
-    }
-
-    /* Custom class for expanded block */
-    #temperatureBlock.expanded {
-      max-height: 600px;  /* Set a maximum height for the expanded block */
-    }
-
-
   </style>
 </head>
 <body class="bg-green-100 text-gray-800">
 
   <!-- Fixed Sidebar Container -->
   <div id="sidebarContainer" class="fixed top-0 left-0 w-64 h-full">
-    <!-- Sidebar Content -->
     <aside id="sidebar" class="bg-green-50 h-full p-6 flex flex-col space-y-6 shadow-lg overflow-y-auto">
-      <!-- Tabs -->
       <div class="flex space-x-2 border-b pb-2">
         <a href="#dashboard" class="flex-1 text-center py-2 font-semibold text-gray-800 border-b-4 border-green-500">
           Dashboard
@@ -87,7 +89,6 @@
           Disease Detection
         </a>
       </div>
-      <!-- About Section -->
       <section>
         <h2 class="text-xl font-semibold text-gray-800">Plant Health Monitor System</h2>
         <p class="mt-2 text-sm text-gray-600">
@@ -95,78 +96,35 @@
           and explore detailed activity logs.
         </p>
       </section>
-      <!-- Disease Types Section -->
       <section>
-        <h2 class="text-xl font-semibold text-gray-800 mb-2">Disease Types</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">About This Project</h2>
         <div class="space-y-2 text-sm">
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Bacterial</summary>
-            <p class="mt-1 text-gray-600">
-              Bacterial diseases cause spots and lesions on lettuce leaves due to bacterial infection.
-            </p>
-          </details>
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Downy</summary>
-            <p class="mt-1 text-gray-600">
-              Downy mildew appears as a fuzzy, discolored growth on the underside of leaves.
-            </p>
-          </details>
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Fungal</summary>
-            <p class="mt-1 text-gray-600">
-              Fungal diseases are marked by moldy growth and discoloration on leaves.
-            </p>
-          </details>
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Healthy</summary>
-            <p class="mt-1 text-gray-600">
-              Healthy lettuce shows vibrant, green leaves free from disease symptoms.
-            </p>
-          </details>
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Powdery</summary>
-            <p class="mt-1 text-gray-600">
-              Powdery mildew is characterized by a white, powdery coating on the leaf surface.
-            </p>
-          </details>
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Septoria</summary>
-            <p class="mt-1 text-gray-600">
-              Septoria leaf spot presents as small, circular spots with dark borders on the leaves.
-            </p>
-          </details>
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Unhealthy</summary>
-            <p class="mt-1 text-gray-600">
-              Unhealthy leaves may show discoloration, wilting, or other stress signs.
-            </p>
-          </details>
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Viral</summary>
-            <p class="mt-1 text-gray-600">
-              Viral infections often lead to mottled, deformed, or stunted leaves.
-            </p>
-          </details>
-          <details class="bg-green-50 p-2 rounded">
-            <summary class="cursor-pointer font-bold">Wilt</summary>
-            <p class="mt-1 text-gray-600">
-              Wilt is indicated by drooping, water-soaked tissues and loss of firmness in leaves.
-            </p>
-          </details>
+          <!-- Project Details -->
+          <div class="bg-green-50 p-2 rounded">
+            <h3 class="font-bold">VF-Farming</h3>
+            <p class="mt-1 text-gray-600">Thesis Project: A Plant Health Monitoring System</p>
+          </div>
+      
+          <div class="bg-green-50 p-2 rounded">
+            <h3 class="font-bold">Contact Information</h3>
+            <p class="mt-1 text-gray-600"><strong>Name:</strong>Dương Trọng Nghĩa </p>
+            <p class="mt-1 text-gray-600"><strong>Email:</strong>dtnghia435@gmail.com</p>
+            <p class="mt-1 text-gray-600"><strong>Phone:</strong>+123 456 7890</p>
+          </div>
         </div>
       </section>
     </aside>
   </div>
   
-  <!-- Toggle Button (Fixed) -->
+  <!-- Toggle Sidebar Button -->
   <button id="toggleSidebar" class="fixed top-1/2 bg-green-600 text-white p-2 rounded-r focus:outline-none opacity-50 hover:opacity-100"
           style="left: 256px; transform: translateY(-50%);">
     ☰
   </button>
   
-  <!-- Main Content (offset by sidebar width when sidebar is visible) -->
+  <!-- Main Content -->
   <main id="mainContent" class="ml-64 p-0 space-y-8">
-    <!-- Hero / Heading Section with Background Image -->
+    <!-- Hero Section -->
     <div class="relative h-64 w-full bg-cover bg-center" style="background-image: url('https://eda.show/content/images/2022/09/scale_1200--27--7.jpg');">
       <div class="absolute inset-0 bg-black bg-opacity-30"></div>
       <div class="relative h-full flex items-center justify-center">
@@ -174,429 +132,591 @@
       </div>
     </div>
     
-    <!-- Additional Content -->
     <div class="px-6">
-      <p class="text-xl text-gray-700 my-6">Explore your plant's data and insights.</p>
+      <p class="text-xl text-gray-700 my-6">
+        Get a comprehensive view of your connected ecosystem's performance.
+      </p>
       
-      <!-- Display Sensor Data Blocks -->
+      <!-- Sensor Data Blocks -->
       <div class="grid grid-cols-1 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow-md p-6 h-auto">
-            <h2 class="text-xl font-semibold">Temperature</h2>
-            <p class="mt-2" id="temperature">{{ latest_data.temperature }} °C</p>
-            <div class="mt-4">
-                <canvas id="temperatureChartCanvas"></canvas>
-            </div>
+        <!-- Temperature Block -->
+        <div class="bg-white rounded-lg shadow-md p-6 relative">
+          <h2 class="text-xl font-semibold">Temperature</h2>
+          <div class="absolute right-4 top-4 space-x-2">
+            <!-- Toggle Chart Button -->
+            <button id="toggleTemperatureChart" class="w-12 h-12 bg-green-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-green-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16M4 12h16" />
+              </svg>
+            </button>
+            <!-- Info Button -->
+            <button id="infoTemperature" class="w-12 h-12 bg-blue-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-blue-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 4v2m-6 4h12a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" />
+              </svg>
+            </button>
+          </div>
+          <p class="mt-2" id="temperature">{{ latest_data.temperature }} °C</p>
+          <div id="temperatureChartContainer" class="mt-4 chart-container">
+            <canvas id="temperatureChartCanvas"></canvas>
+          </div>
+          <!-- Temperature Info Modal -->
+          <div id="temperatureInfo" class="hidden p-4 mt-4 bg-gray-100 rounded-lg border border-gray-300 shadow-lg">
+            <h3 class="text-lg font-semibold">Temperature Information</h3>
+            <p class="text-sm mt-2">
+              <strong>Metabolic Processes (Temperature):</strong> Temperature affects crucial plant processes like photosynthesis and respiration. Maintaining the optimal temperature range ensures these processes function efficiently for healthy growth.  
+              <br><br>
+              <strong>Nutrient Uptake (Temperature):</strong> Water temperature influences the solubility of nutrients and the plant's ability to absorb them. Extreme temperatures can hinder nutrient uptake and stress the plants.  
+              <br><br>
+              <strong>Disease Prevention (Temperature):</strong> Maintaining appropriate water temperature can help prevent the growth of harmful pathogens that thrive in specific temperature ranges.
+            </p>
+            <button id="closeInfoTemperature" class="mt-4 p-3 bg-red-600 text-white rounded-full hover:bg-red-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              Close Info
+            </button>
+          </div>
         </div>
 
-
         <!-- Water Level Block -->
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-lg shadow-md p-6 relative">
           <h2 class="text-xl font-semibold">Water Level</h2>
+          <div class="absolute right-4 top-4 space-x-2">
+            <!-- Toggle Chart Button -->
+            <button id="toggleWaterLevelChart" class="w-12 h-12 bg-green-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-green-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16M4 12h16" />
+              </svg>
+            </button>
+            <!-- Info Button -->
+            <button id="infoWaterLevel" class="w-12 h-12 bg-blue-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-blue-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 4v2m-6 4h12a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" />
+              </svg>
+            </button>
+          </div>
           <p class="mt-2" id="water_level">{{ latest_data.water_level }} %</p>
-            <div class="mt-4">
-                <canvas id="waterLevelChartCanvas"></canvas>
-            </div>
+          <div id="waterLevelChartContainer" class="mt-4 chart-container">
+            <canvas id="waterLevelChartCanvas"></canvas>
+          </div>
+          <!-- Water Level Info Modal -->
+          <div id="waterLevelInfo" class="hidden p-4 mt-4 bg-gray-100 rounded-lg border border-gray-300 shadow-lg">
+            <h3 class="text-lg font-semibold">Water Level Information</h3>
+            <p class="text-sm mt-2">
+              <strong>Nutrient Delivery:</strong> The water carries essential nutrients to the plant roots. Maintaining the correct level ensures consistent access to this nutrient-rich solution for healthy growth.  
+              <br><br>
+              <strong>Oxygen Availability:</strong> Roots need oxygen as well as nutrients. The water level must be managed to allow for adequate oxygen exposure, preventing root rot caused by over-saturation.  
+              <br><br>
+              <strong>Root Health:</strong> The right water level supports optimal root development, allowing for efficient nutrient uptake without drying out or becoming waterlogged.  
+              <br><br>
+              <strong>System Function:</strong> In many hydroponic systems, the water level is critical for proper operation, such as in ebb and flow systems where timed flooding and draining are necessary.
+            </p>
+            <button id="closeInfoWaterLevel" class="mt-4 p-3 bg-red-600 text-white rounded-full hover:bg-red-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              Close Info
+            </button>
+          </div>
         </div>
 
         <!-- Light Block -->
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white rounded-lg shadow-md p-6 relative">
           <h2 class="text-xl font-semibold">Light</h2>
+          <div class="absolute right-4 top-4 space-x-2">
+            <!-- Toggle Chart Button -->
+            <button id="toggleLightChart" class="w-12 h-12 bg-green-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-green-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16M4 12h16" />
+              </svg>
+            </button>
+            <!-- Info Button -->
+            <button id="infoLight" class="w-12 h-12 bg-blue-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-blue-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 4v2m-6 4h12a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" />
+              </svg>
+            </button>
+          </div>
           <p class="mt-2" id="light">{{ latest_data.light }} lux</p>
-          <div class="mt-4">
-              <canvas id="lightChartCanvas"></canvas>
+          <div id="lightChartContainer" class="mt-4 chart-container">
+            <canvas id="lightChartCanvas"></canvas>
+          </div>
+          <!-- Light Info Modal -->
+          <div id="lightInfo" class="hidden p-4 mt-4 bg-gray-100 rounded-lg border border-gray-300 shadow-lg">
+            <h3 class="text-lg font-semibold">Light Information</h3>
+            <p class="text-sm mt-2">
+              <strong>Energy Source for Photosynthesis:</strong> Light is the primary energy source that drives photosynthesis.  
+              <br><br>
+              <strong>Intensity, Duration, and Spectrum:</strong> Plants need the right intensity (brightness), duration (how many hours per day), and spectrum (colors of light) for optimal growth. These requirements vary depending on the plant species and growth stage.  
+              <br><br>
+              <strong>Artificial Lighting in Hydroponics:</strong> Indoor hydroponic farms rely on artificial lights (like LEDs or grow lights) to provide the necessary light for plant growth. The type and schedule of lighting are carefully managed.  
+              <br><br>
+              <strong>Insufficient vs. Excessive Light:</strong> Too little light leads to weak, leggy growth, while too much can cause stress, leaf burn, or other damage.
+            </p>
+            <button id="closeInfoLight" class="mt-4 p-3 bg-red-600 text-white rounded-full hover:bg-red-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              Close Info
+            </button>
           </div>
         </div>
-        
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold">Dust Density</h2>
-            <p class="mt-2" id="dust_density">{{ latest_data.dust_density }} µg/m³</p>
-            <div class="mt-4">
-                <canvas id="dustDensityChartCanvas"></canvas>
-            </div>
+
+        <!-- Dust Density Block -->
+        <div class="bg-white rounded-lg shadow-md p-6 relative">
+          <h2 class="text-xl font-semibold">Dust Density</h2>
+          <div class="absolute right-4 top-4 space-x-2">
+            <!-- Toggle Chart Button -->
+            <button id="toggleDustDensityChart" class="w-12 h-12 bg-green-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-green-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16M4 12h16" />
+              </svg>
+            </button>
+            <!-- Info Button -->
+            <button id="infoDustDensity" class="w-12 h-12 bg-blue-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-blue-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 4v2m-6 4h12a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" />
+              </svg>
+            </button>
+          </div>
+          <p class="mt-2" id="dust_density">{{ latest_data.dust_density }} µg/m³</p>
+          <div id="dustDensityChartContainer" class="mt-4 chart-container">
+            <canvas id="dustDensityChartCanvas"></canvas>
+          </div>
+          <!-- Dust Density Info Modal -->
+          <div id="dustDensityInfo" class="hidden p-4 mt-4 bg-gray-100 rounded-lg border border-gray-300 shadow-lg">
+            <h3 class="text-lg font-semibold">Dust Density Information</h3>
+            <p class="text-sm mt-2">
+              <strong>Reduces Light Absorption:</strong> Dust on leaves acts like a barrier, preventing them from absorbing the light needed for photosynthesis.  
+              <br><br>
+              <strong>Hinders Gas Exchange:</strong> A thick layer of dust can also clog the stomata (tiny pores on leaves), which are essential for gas exchange (CO2 intake and oxygen release).  
+              <br><br>
+              <strong>Cleanliness is Important:</strong> Maintaining a clean environment with low dust levels is necessary for optimal plant health and growth in hydroponics.
+            </p>
+            <button id="closeInfoDustDensity" class="mt-4 p-3 bg-red-600 text-white rounded-full hover:bg-red-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              Close Info
+            </button>
+          </div>
         </div>
-        
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold">CO</h2>
-            <p class="mt-2" id="co">{{ latest_data.co }} ppm</p>
-            <div class="mt-4">
-                <canvas id="coChartCanvas"></canvas>
-            </div>
+
+        <!-- CO Block -->
+        <div class="bg-white rounded-lg shadow-md p-6 relative">
+          <h2 class="text-xl font-semibold">CO</h2>
+          <div class="absolute right-4 top-4 space-x-2">
+            <!-- Toggle Chart Button -->
+            <button id="toggleCOChart" class="w-12 h-12 bg-green-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-green-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16M4 12h16" />
+              </svg>
+            </button>
+            <!-- Info Button -->
+            <button id="infoCO" class="w-12 h-12 bg-blue-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-blue-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 4v2m-6 4h12a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" />
+              </svg>
+            </button>
+          </div>
+          <p class="mt-2" id="co">{{ latest_data.co }} ppm</p>
+          <div id="coChartContainer" class="mt-4 chart-container">
+            <canvas id="coChartCanvas"></canvas>
+          </div>
+          <!-- CO Info Modal -->
+          <div id="coInfo" class="hidden p-4 mt-4 bg-gray-100 rounded-lg border border-gray-300 shadow-lg">
+            <h3 class="text-lg font-semibold">CO Information</h3>
+            <p class="text-sm mt-2">
+              <strong>Highly Toxic:</strong> Carbon monoxide is a poisonous gas for plants, just like it is for humans.  
+              <br><br>
+              <strong>Interferes with Respiration:</strong> It binds to the molecules involved in respiration, preventing the plant from getting the energy it needs to function.  
+              <br><br>
+              <strong>Avoidance is Key:</strong> It's crucial to ensure there are no sources of CO near a hydroponic farm, as even low levels can be damaging.
+            </p>
+            <button id="closeInfoCO" class="mt-4 p-3 bg-red-600 text-white rounded-full hover:bg-red-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              Close Info
+            </button>
+          </div>
         </div>
-        
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold">CO2</h2>
-            <p class="mt-2" id="co2">{{ latest_data.co2 }} ppm</p>
-            <div class="mt-4">
-                <canvas id="co2ChartCanvas"></canvas>
-            </div>
+
+        <!-- CO2 Block -->
+        <div class="bg-white rounded-lg shadow-md p-6 relative">
+          <h2 class="text-xl font-semibold">CO₂</h2>
+          <div class="absolute right-4 top-4 space-x-2">
+            <!-- Toggle Chart Button -->
+            <button id="toggleCO2Chart" class="w-12 h-12 bg-green-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-green-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16M4 12h16" />
+              </svg>
+            </button>
+            <!-- Info Button -->
+            <button id="infoCO2" class="w-12 h-12 bg-blue-600 text-white rounded-full shadow-md opacity-50 hover:opacity-100 hover:bg-blue-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 4v2m-6 4h12a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" />
+              </svg>
+            </button>
+          </div>
+          <p class="mt-2" id="co2">{{ latest_data.co2 }} ppm</p>
+          <div id="co2ChartContainer" class="mt-4 chart-container">
+            <canvas id="co2ChartCanvas"></canvas>
+          </div>
+          <!-- CO2 Info Modal -->
+          <div id="co2Info" class="hidden p-4 mt-4 bg-gray-100 rounded-lg border border-gray-300 shadow-lg">
+            <h3 class="text-lg font-semibold">CO₂ Information</h3>
+            <p class="text-sm mt-2">
+              <strong>Essential for Photosynthesis:</strong> Plants use CO2, along with light and water, to produce sugars for growth.  
+              <br><br>
+              <strong>Optimal Levels:</strong> Just like with temperature, there's an optimal CO2 concentration for each plant species. Too little limits growth, while too much (within certain limits) can boost it.  
+              <br><br>
+              <strong>Controlled Environments:</strong> Hydroponic systems, especially indoor ones, often control CO2 levels to maximize plant growth and yield.
+            </p>
+            <button id="closeInfoCO2" class="mt-4 p-3 bg-red-600 text-white rounded-full hover:bg-red-700 focus:outline-none transition-transform duration-200 hover:scale-105">
+              Close Info
+            </button>
+          </div>
         </div>
+
       </div>
     </div>
   </main>
   
-  
   <script>
-    
-    // Get elements
+// Sidebar Toggle Logic
     var toggleButton = document.getElementById('toggleSidebar');
     var sidebarContainer = document.getElementById('sidebarContainer');
     var mainContent = document.getElementById('mainContent');
-    
-    // When clicking the button, toggle sidebar visibility and update layouts.
     toggleButton.addEventListener('click', function() {
-      if (sidebarContainer.style.transform === 'translateX(0%)') {
-        // Sidebar is visible: hide the sidebar
-        sidebarContainer.style.transform = 'translateX(-100%)';
-        sidebarContainer.style.opacity = '0';
-        mainContent.classList.remove('ml-64');
-        toggleButton.style.left = '0px';  // Move button to the left
-      } else {
-        // Sidebar is hidden: show the sidebar slowly
-        sidebarContainer.style.transform = 'translateX(0%)';
-        sidebarContainer.style.opacity = '1';
-        mainContent.classList.add('ml-64');
-        toggleButton.style.left = '256px';  // Move button to the right
-      }
+        if (sidebarContainer.style.transform === 'translateX(0%)') {
+            sidebarContainer.style.transform = 'translateX(-100%)';
+            sidebarContainer.style.opacity = '0';
+            mainContent.classList.remove('ml-64');
+            toggleButton.style.left = '0px';
+        } else {
+            sidebarContainer.style.transform = 'translateX(0%)';
+            sidebarContainer.style.opacity = '1';
+            mainContent.classList.add('ml-64');
+            toggleButton.style.left = '256px';
+        }
     });
 
-    // ... (previous JavaScript code) ...
+    // Toggle functions for chart containers
+    document.getElementById('toggleTemperatureChart').addEventListener('click', function() {
+        const container = document.getElementById('temperatureChartContainer');
+        container.style.display = (container.style.display === 'none' || container.style.display === '') ? 'block' : 'none';
+    });
+    document.getElementById('toggleWaterLevelChart').addEventListener('click', function() {
+        const container = document.getElementById('waterLevelChartContainer');
+        container.style.display = (container.style.display === 'none' || container.style.display === '') ? 'block' : 'none';
+    });
+    document.getElementById('toggleLightChart').addEventListener('click', function() {
+        const container = document.getElementById('lightChartContainer');
+        container.style.display = (container.style.display === 'none' || container.style.display === '') ? 'block' : 'none';
+    });
+    document.getElementById('toggleDustDensityChart').addEventListener('click', function() {
+        const container = document.getElementById('dustDensityChartContainer');
+        container.style.display = (container.style.display === 'none' || container.style.display === '') ? 'block' : 'none';
+    });
+    document.getElementById('toggleCOChart').addEventListener('click', function() {
+        const container = document.getElementById('coChartContainer');
+        container.style.display = (container.style.display === 'none' || container.style.display === '') ? 'block' : 'none';
+    });
+    document.getElementById('toggleCO2Chart').addEventListener('click', function() {
+        const container = document.getElementById('co2ChartContainer');
+        container.style.display = (container.style.display === 'none' || container.style.display === '') ? 'block' : 'none';
+    });
 
-    // Function to draw the Temperature Chart
-    function drawTemperatureChart() {
-        const chartCanvas = document.getElementById('temperatureChartCanvas');
-        const ctx = chartCanvas.getContext('2d');
+    // Toggle functions for info modals
+    function toggleModal(buttonId, modalId) {
+        document.getElementById(buttonId).addEventListener('click', function() {
+            document.getElementById(modalId).classList.toggle('hidden');
+        });
+    }
+    toggleModal('infoTemperature', 'temperatureInfo');
+    toggleModal('infoWaterLevel', 'waterLevelInfo');
+    toggleModal('infoLight', 'lightInfo');
+    toggleModal('infoDustDensity', 'dustDensityInfo');
+    toggleModal('infoCO', 'coInfo');
+    toggleModal('infoCO2', 'co2Info');
 
-        fetch('/temperature_data')
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error('Error fetching temperature data:', data.error);
-                    return;
-                }
+    // Close modal buttons
+    document.getElementById('closeInfoTemperature').addEventListener('click', function() {
+        document.getElementById('temperatureInfo').classList.add('hidden');
+    });
+    document.getElementById('closeInfoWaterLevel').addEventListener('click', function() {
+        document.getElementById('waterLevelInfo').classList.add('hidden');
+    });
+    document.getElementById('closeInfoLight').addEventListener('click', function() {
+        document.getElementById('lightInfo').classList.add('hidden');
+    });
+    document.getElementById('closeInfoDustDensity').addEventListener('click', function() {
+        document.getElementById('dustDensityInfo').classList.add('hidden');
+    });
+    document.getElementById('closeInfoCO').addEventListener('click', function() {
+        document.getElementById('coInfo').classList.add('hidden');
+    });
+    document.getElementById('closeInfoCO2').addEventListener('click', function() {
+        document.getElementById('co2Info').classList.add('hidden');
+    });
 
-                // Prepare data for the chart
-                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
-                const temperatures = data.map(entry => entry.temperature);
+    // Chart variables
+    let temperatureChart = null;
+    let waterLevelChart = null;
+    let lightChart = null;
+    let dustDensityChart = null;
+    let coChart = null;
+    let co2Chart = null;
 
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: timestamps,
-                        datasets: [{
-                            label: 'Temperature (°C)',
-                            data: temperatures,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            fill: true,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'minute',
-                                    tooltipFormat: 'll HH:mm'
-                                }
-                            },
-                            y: {
-                                ticks: {
-                                    beginAtZero: false,
-                                    stepSize: 5,
-                                }
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching temperature data:', error));
+    // Drawing the charts (formatted similarly to the temperature chart)
+    function drawTemperatureChart(chart) {
+      const ctx = document.getElementById('temperatureChartCanvas').getContext('2d');
+      if (temperatureChart) { // Check if a chart instance exists
+          temperatureChart.destroy(); // Destroy the existing chart
+      }
+      fetch('/temperature_data')
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) return console.error(data.error);
+              const timestamps = data.map(e => new Date(e.timestamp).toISOString());
+              const temperatures = data.map(e => e.temperature);
+
+              temperatureChart = new Chart(ctx, { // Create a new chart instance
+                  type: 'line',
+                  data: {
+                      labels: timestamps,
+                      datasets: [{
+                          label: 'Temperature (°C)',
+                          data: temperatures,
+                          borderColor: 'rgba(75, 192, 192, 1)',
+                          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                          fill: true,
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                          x: { type: 'time', time: { unit: 'minute', tooltipFormat: 'yyyy-MM-dd HH:mm' } }, // Changed tooltipFormat
+                          y: { ticks: { beginAtZero: false, stepSize: 5 } }
+                      }
+                  }
+
+              });
+          })
+          .catch(console.error);
+      return temperatureChart; // Return the new chart instance
     }
 
- 
-    function drawWaterLevelChart() {
-        const chartCanvas = document.getElementById('waterLevelChartCanvas');
-        const ctx = chartCanvas.getContext('2d');
+    function drawWaterLevelChart(chart) {
+      const ctx = document.getElementById('waterLevelChartCanvas').getContext('2d');
+      if (waterLevelChart) {
+          waterLevelChart.destroy();
+      }
+      fetch('/water_level_data')
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) return console.error(data.error);
+              const timestamps = data.map(e => new Date(e.timestamp).toISOString());
+              const levels = data.map(e => e.water_level);
+              waterLevelChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: timestamps,
+                      datasets: [{
+                          label: 'Water Level (%)',
+                          data: levels,
+                          borderColor: 'rgba(54, 162, 235, 1)',
+                          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                          fill: true,
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                          x: { type: 'time', time: { unit: 'minute', tooltipFormat: 'yyyy-MM-dd HH:mm' } }, // Changed tooltipFormat
+                          y: { ticks: { beginAtZero: false, stepSize: 5 } }
+                      }
+                  }
 
-        fetch('/water_level_data')
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error('Error fetching water level data:', data.error);
-                    return;
-                }
-
-                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
-                const waterLevels = data.map(entry => entry.water_level);
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: timestamps,
-                        datasets: [{
-                            label: 'Water Level (%)',
-                            data: waterLevels,
-                            borderColor: 'rgba(54, 162, 235, 1)', // Blue color
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            fill: true,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'minute',
-                                    tooltipFormat: 'll HH:mm'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                max: 100, // Assuming water level is a percentage
-                                ticks: {
-                                    stepSize: 10
-                                }
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching water level data:', error));
+              });
+          })
+          .catch(console.error);
+      return waterLevelChart;
     }
 
-    function drawLightChart() {
-        const chartCanvas = document.getElementById('lightChartCanvas');
-        const ctx = chartCanvas.getContext('2d');
+    function drawLightChart(chart) {
+      const ctx = document.getElementById('lightChartCanvas').getContext('2d');
+      if (lightChart) {
+          lightChart.destroy();
+      }
+      fetch('/light_data')
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) return console.error(data.error);
+              const timestamps = data.map(e => new Date(e.timestamp).toISOString());
+              const levels = data.map(e => e.light);
+              lightChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: timestamps,
+                      datasets: [{
+                          label: 'Light (lux)',
+                          data: levels,
+                          borderColor: 'rgba(255, 206, 86, 1)',
+                          backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                          fill: true,
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                          x: { type: 'time', time: { unit: 'minute', tooltipFormat: 'yyyy-MM-dd HH:mm' } }, // Changed tooltipFormat
+                          y: { ticks: { beginAtZero: false, stepSize: 5 } }
+                      }
+                  }
 
-        fetch('/light_data')
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error('Error fetching light data:', data.error);
-                    return;
-                }
-
-                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
-                const lightLevels = data.map(entry => entry.light);
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: timestamps,
-                        datasets: [{
-                            label: 'Light (lux)',
-                            data: lightLevels,
-                            borderColor: 'rgba(255, 206, 86, 1)', // Yellow color
-                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                            fill: true,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'minute',
-                                    tooltipFormat: 'll HH:mm'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching light data:', error));
+              });
+          })
+          .catch(console.error);
+      return lightChart;
     }
 
-    // Function to draw the Dust Density Chart
-    function drawDustDensityChart() {
-        const chartCanvas = document.getElementById('dustDensityChartCanvas');
-        const ctx = chartCanvas.getContext('2d');
-
-        fetch('/dust_density_data')
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error('Error fetching dust density data:', data.error);
-                    return;
-                }
-
-                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
-                const dustDensities = data.map(entry => entry.dust_density);
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: timestamps,
-                        datasets: [{
-                            label: 'Dust Density (µg/m³)',
-                            data: dustDensities,
-                            borderColor: 'rgba(153, 102, 255, 1)', // Purple color
-                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                            fill: true,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'minute',
-                                    tooltipFormat: 'll HH:mm'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching dust density data:', error));
+    function drawDustDensityChart(chart) {
+      const ctx = document.getElementById('dustDensityChartCanvas').getContext('2d');
+      if (dustDensityChart) {
+          dustDensityChart.destroy();
+      }
+      fetch('/dust_density_data')
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) return console.error(data.error);
+              const timestamps = data.map(e => new Date(e.timestamp).toISOString());
+              const values = data.map(e => e.dust_density);
+              dustDensityChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: timestamps,
+                      datasets: [{
+                          label: 'Dust Density (µg/m³)',
+                          data: values,
+                          borderColor: 'rgba(153, 102, 255, 1)',
+                          backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                          fill: true,
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                          x: { type: 'time', time: { unit: 'minute', tooltipFormat: 'yyyy-MM-dd HH:mm' } }, // Changed tooltipFormat
+                          y: { ticks: { beginAtZero: false, stepSize: 5 } }
+                      }
+                  }
+              });
+          })
+          .catch(console.error);
+      return dustDensityChart;
     }
 
-    // Function to draw the CO Chart
-    function drawCOChart() {
-        const chartCanvas = document.getElementById('coChartCanvas');
-        const ctx = chartCanvas.getContext('2d');
+    function drawCOChart(chart) {
+      const ctx = document.getElementById('coChartCanvas').getContext('2d');
+      if (coChart) {
+          coChart.destroy();
+      }
+      fetch('/co_data')
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) return console.error(data.error);
+              const timestamps = data.map(e => new Date(e.timestamp).toISOString());
+              const values = data.map(e => e.co);
+              coChart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: timestamps,
+                      datasets: [{
+                          label: 'CO (ppm)',
+                          data: values,
+                          borderColor: 'rgba(255, 99, 132, 1)',
+                          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                          fill: true,
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                          x: { type: 'time', time: { unit: 'minute', tooltipFormat: 'yyyy-MM-dd HH:mm' } }, // Changed tooltipFormat
+                          y: { ticks: { beginAtZero: false, stepSize: 5 } }
+                      }
+                  }
 
-        fetch('/co_data')
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error('Error fetching CO data:', data.error);
-                    return;
-                }
-
-                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
-                const coLevels = data.map(entry => entry.co);
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: timestamps,
-                        datasets: [{
-                            label: 'CO (ppm)',
-                            data: coLevels,
-                            borderColor: 'rgba(255, 99, 132, 1)', // Red color
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            fill: true,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'minute',
-                                    tooltipFormat: 'll HH:mm'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching CO data:', error));
+              });
+          })
+          .catch(console.error);
+      return coChart;
     }
 
-    // Function to draw the CO2 Chart
-    function drawCO2Chart() {
-        const chartCanvas = document.getElementById('co2ChartCanvas');
-        const ctx = chartCanvas.getContext('2d');
-
-        fetch('/co2_data')
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error('Error fetching CO2 data:', data.error);
-                    return;
-                }
-
-                const timestamps = data.map(entry => new Date(entry.timestamp).toISOString());
-                const co2Levels = data.map(entry => entry.co2);
-
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: timestamps,
-                        datasets: [{
-                            label: 'CO2 (ppm)',
-                            data: co2Levels,
-                            borderColor: 'rgba(75, 192, 192, 1)', // Teal color
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            fill: true,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: {
-                                    unit: 'minute',
-                                    tooltipFormat: 'll HH:mm'
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching CO2 data:', error));
+    function drawCO2Chart(chart) {
+      const ctx = document.getElementById('co2ChartCanvas').getContext('2d');
+      if (co2Chart) {
+          co2Chart.destroy();
+      }
+      fetch('/co2_data')
+          .then(response => response.json())
+          .then(data => {
+              if (data.error) return console.error(data.error);
+              const timestamps = data.map(e => new Date(e.timestamp).toISOString());
+              const values = data.map(e => e.co2);
+              co2Chart = new Chart(ctx, {
+                  type: 'line',
+                  data: {
+                      labels: timestamps,
+                      datasets: [{
+                          label: 'CO₂ (ppm)',
+                          data: values,
+                          borderColor: 'rgba(75, 192, 192, 1)',
+                          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                          fill: true,
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      scales: {
+                          x: { type: 'time', time: { unit: 'minute', tooltipFormat: 'yyyy-MM-dd HH:mm' } }, // Changed tooltipFormat
+                          y: { ticks: { beginAtZero: false, stepSize: 5 } }
+                      }
+                  }
+              });
+          })
+          .catch(console.error);
+      return co2Chart;
     }
 
-    // Call the functions to draw the charts on page load
-    drawTemperatureChart();
-    drawWaterLevelChart();
-    drawLightChart();
-    drawDustDensityChart();
-    drawCOChart();
-    drawCO2Chart();
+    // Initial chart drawing and sensor data update
+    temperatureChart = drawTemperatureChart(temperatureChart);
+    waterLevelChart = drawWaterLevelChart(waterLevelChart);
+    lightChart = drawLightChart(lightChart);
+    dustDensityChart = drawDustDensityChart(dustDensityChart);
+    coChart = drawCOChart(coChart);
+    co2Chart = drawCO2Chart(co2Chart);
 
+    // Sensor data update function
+    function updateSensorData() {
+        fetch('/latest_data')
+            .then(response => response.json())
+            .then(data => {
+                if (data.temperature) document.getElementById('temperature').textContent = `${parseFloat(data.temperature).toFixed(2)} °C`;
+                if (data.water_level) document.getElementById('water_level').textContent = `${parseFloat(data.water_level).toFixed(2)} %`;
+                if (data.light) document.getElementById('light').textContent = `${parseFloat(data.light).toFixed(2)} lux`;
+                if (data.dust_density) document.getElementById('dust_density').textContent = `${parseFloat(data.dust_density).toFixed(2)} µg/m³`;
+                if (data.co) document.getElementById('co').textContent = `${parseFloat(data.co).toFixed(2)} ppm`;
+                if (data.co2) document.getElementById('co2').textContent = `${parseFloat(data.co2).toFixed(2)} ppm`;
+            })
+            .catch(console.error);
+    }
 
-  // Function to fetch and update sensor data
-  function updateSensorData() {
-    fetch('/latest_data')
-      .then(response => response.json())
-      .then(data => {
-        // Format and update the DOM elements with the new data
-        if (data.temperature) {
-          document.getElementById('temperature').textContent = `${parseFloat(data.temperature).toFixed(2)} °C`;
-        }
-        if (data.water_level) {
-          document.getElementById('water_level').textContent = `${parseFloat(data.water_level).toFixed(2)} %`;
-        }
-        if (data.light) {
-          document.getElementById('light').textContent = `${parseFloat(data.light).toFixed(2)} lux`;
-        }
-        if (data.dust_density) {
-          document.getElementById('dust_density').textContent = `${parseFloat(data.dust_density).toFixed(2)} µg/m³`;
-        }
-        if (data.co) {
-          document.getElementById('co').textContent = `${parseFloat(data.co).toFixed(2)} ppm`;
-        }
-        if (data.co2) {
-          document.getElementById('co2').textContent = `${parseFloat(data.co2).toFixed(2)} ppm`;
-        }
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }
-
-
-  // Set an interval to update the data every 5 seconds
-  setInterval(updateSensorData, 1000);
-
+    // Real-time update interval
+// Real-time update interval
+    setInterval(() => {
+        temperatureChart = drawTemperatureChart(temperatureChart); // Pass the existing chart
+        waterLevelChart = drawWaterLevelChart(waterLevelChart);     // Pass the existing chart
+        lightChart = drawLightChart(lightChart);                 // Pass the existing chart
+        dustDensityChart = drawDustDensityChart(dustDensityChart); // Pass the existing chart
+        coChart = drawCOChart(coChart);                           // Pass the existing chart
+        co2Chart = drawCO2Chart(co2Chart);                         // Pass the existing chart
+        updateSensorData(); // Keep updating the latest data display
+    }, 5000); // Update every 5 seconds (adjust as needed)
   </script>
 </body>
 </html>
