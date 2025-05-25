@@ -146,3 +146,41 @@ def get_image():
         return jsonify({'image': latest_image}), 200
     else:
         return jsonify({'error': 'No image available'}), 204 # No Content
+
+
+# --- Disease-detection state (keep simple & in-memory for now) -------------
+latest_pred_img_b64 = None     # full base-64 string, no header
+latest_pred_label   = "Awaiting first prediction…"
+
+@app.route('/upload_image_and_prediction', methods=['POST'])
+def upload_image_and_prediction():
+    """
+    Raspberry Pi POSTs:
+        { "image": "<base64-string>", "prediction": "<label>" }
+    """
+    global latest_pred_img_b64, latest_pred_label
+    data = request.get_json(silent=True) or {}
+
+    img = data.get("image")
+    label = data.get("prediction")
+    if not img or not label:
+        return jsonify({'error': 'Both image and prediction are required'}), 400
+
+    latest_pred_img_b64 = img
+    latest_pred_label   = label
+    return jsonify({'status': 'received'}), 200
+
+
+@app.route('/latest_prediction', methods=['GET'])
+def latest_prediction():
+    """
+    Dashboard polls this every few seconds.
+    """
+    if latest_pred_img_b64 is None:
+        return jsonify({'ready': False}), 200
+
+    return jsonify({
+        'ready'     : True,
+        'image_b64' : latest_pred_img_b64,
+        'label'     : latest_pred_label,
+    }), 200
