@@ -136,7 +136,78 @@
       <p class="text-xl text-gray-700 my-6">
         Get a comprehensive view of your connected ecosystem's performance.
       </p>
-      
+
+      <!-- Section with Heading and GIF on left, text below, and image on the right -->
+      <!-- <div class="px-6"> -->
+      <!-- <div id="statusSection" class="px-6 mb-12 hidden"></div>
+        <div class="bg-green-500 text-white p-4 rounded-md mb-6">
+          <h2 class="text-2xl font-semibold text-center">
+            Your Plant(s) Status in Real-time
+          </h2>
+        </div>
+        <div class="flex justify-between items-center space-x-8 transition-all duration-500" id="dynamicSection"> -->
+          <!-- Left Side (GIF + Text) -->
+          <!-- <div class="flex flex-col items-center w-full max-w-[400px]" id="leftSide"> -->
+            <!-- GIF -->
+            <!-- <img src="static/AI-Plant.png" alt="PNG" class="gif-image w-full h-auto max-w-[300px] rounded-lg shadow-lg transition-all duration-500"> -->
+            
+            <!-- Text below the GIF -->
+            <!-- <p class="text-center text-lg text-gray-700 font-semibold"> -->
+              <!-- [!] The image will update every 10 seconds [!] -->
+            <!-- </p> -->
+          <!-- </div> -->
+
+          <!-- Right Side (Image) -->
+          <!-- <div class="w-full max-w-[500px] h-full flex justify-center items-center mt-[-5px]" id="rightSide"> -->
+            <!-- <img id="webcamImage" src="" alt="Webcam Image" class="max-w-full max-h-full object-contain rounded-lg shadow-lg transition-all duration-500 mt-[-10px]"> -->
+          <!-- </div> -->
+        <!-- </div> -->
+      <!-- </div> -->
+    </div>
+
+    <section id="statusSection" class="px-6">
+      <!-- heading bar -->
+      <div class="bg-green-500 text-white p-4 rounded-md mb-6">
+        <h2 class="text-2xl font-semibold text-center">
+          Your Plant(s) Status in Real-time
+        </h2>
+      </div>
+
+      <!-- GIF  +  webcam image -->
+      <div id="dynamicSection"
+          class="flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 md:space-x-8 transition-all duration-500">
+        
+        <!-- left = GIF + caption -->
+        <!-- <div class="flex flex-col items-center w-full md:max-w-[400px]"> -->
+        <div id="leftSide" class="flex flex-col items-center w-full md:max-w-[400px]">
+          <!--  your AI-Plant GIF / PNG -->
+          <img src="static/AI-Plant.png"
+              alt="AI Plant animation"
+              class="gif-image w-full h-auto max-w-[300px] rounded-lg shadow-lg transition-all duration-500" />
+
+          <p class="mt-4 text-center text-lg text-gray-700 font-semibold">
+            [!] The image will update every&nbsp;10&nbsp;seconds&nbsp;[!]
+          </p>
+        </div>
+
+        <!-- right = latest webcam frame from Flask -->
+        <!-- <div class="w-full md:max-w-[500px] flex justify-center items-center"> -->
+        <div id="rightSide" class="w-full md:max-w-[500px] flex justify-center items-center">
+          <img id="webcamImage"
+              src="https://via.placeholder.com/500x375?text=Waiting+for+image"
+              alt="Latest webcam capture"
+              class="max-w-full max-h-full object-contain rounded-lg shadow-lg transition-all duration-500" />
+        </div>
+      </div>
+    </section>
+
+    <!-- <div class="px-6"> -->
+    <section id="environmentSection" class="px-6">
+      <div class="bg-green-500 text-white p-4 rounded-md mb-6">
+        <h2 class="text-2xl font-semibold text-center">
+          Your Plant's Enviromental Factors
+        </h2>
+      </div>
       <!-- Sensor Data Blocks -->
       <div class="grid grid-cols-1 gap-6 mb-8">
         <!-- Temperature Block -->
@@ -349,13 +420,14 @@
           <div id="co2ChartContainer" class="mt-4 chart-container">
             <canvas id="co2ChartCanvas"></canvas>
           </div>
+          <!-- </div> -->
           <!-- CO2 Info Modal -->
           <div id="co2Info" class="hidden p-4 mt-4 bg-gray-100 rounded-lg border border-gray-300 shadow-lg">
             <h3 class="text-lg font-semibold">CO₂ Information</h3>
             <p class="text-sm mt-2">
               <strong>Essential for Photosynthesis:</strong> Plants use CO2, along with light and water, to produce sugars for growth.  
               <br><br>
-              <strong>Optimal Levels:</strong> Just like with temperature, there's an optimal CO2 concentration for each plant species. Too little limits growth, while too much (within certain limits) can boost it.  
+                <strong>Optimal Levels:</strong> Just like with temperature, there's an optimal CO2 concentration for each plant species. Too little limits growth, while too much (within certain limits) can boost it.  
               <br><br>
               <strong>Controlled Environments:</strong> Hydroponic systems, especially indoor ones, often control CO2 levels to maximize plant growth and yield.
             </p>
@@ -364,28 +436,91 @@
             </button>
           </div>
         </div>
-
       </div>
-    </div>
-  </main>
+    </section>
+
+    <!-- ===================== DISEASE DETECTION ===================== -->
+    <section id="diseaseDetection" class="px-6 mb-12 hidden">
+      <div class="bg-green-500 text-white p-4 rounded-md mb-6">
+        <h2 class="text-2xl font-semibold text-center">Disease Detection</h2>
+      </div>
+
+      <!-- Live preview card -->
+      <div id="diseaseCard" class="bg-white rounded-lg shadow-md p-6 flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8">
+        <!-- image -->
+        <img id="diseaseImg"
+           src="https://via.placeholder.com/400x300?text=Waiting+for+image"
+           alt="Latest capture"
+           class="w-full md:w-1/2 rounded-lg shadow-lg object-contain">
+
+           <!-- label & controls -->
+           <div class="flex-1 text-center md:text-left">
+            <h3 class="text-xl font-semibold mb-2">Latest prediction</h3>
+             <p id="diseaseLabel" class="text-lg font-bold text-green-700">Awaiting first prediction…</p>
+
+             <button id="forceRefresh"
+              class="mt-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none transition-transform hover:scale-105">
+              Refresh now
+             </button>
+          </div>
+       </div>
+    </section>
+</main>
   
   <script>
-// Sidebar Toggle Logic
+    // Sidebar Toggle Logic
     var toggleButton = document.getElementById('toggleSidebar');
     var sidebarContainer = document.getElementById('sidebarContainer');
     var mainContent = document.getElementById('mainContent');
-    toggleButton.addEventListener('click', function() {
-        if (sidebarContainer.style.transform === 'translateX(0%)') {
-            sidebarContainer.style.transform = 'translateX(-100%)';
-            sidebarContainer.style.opacity = '0';
-            mainContent.classList.remove('ml-64');
-            toggleButton.style.left = '0px';
-        } else {
-            sidebarContainer.style.transform = 'translateX(0%)';
-            sidebarContainer.style.opacity = '1';
-            mainContent.classList.add('ml-64');
-            toggleButton.style.left = '256px';
-        }
+    var leftSide = document.getElementById('leftSide');
+    var rightSide = document.getElementById('rightSide');
+    var gifImage = document.querySelector('.gif-image');
+    var webcamImage = document.getElementById('webcamImage');
+
+
+
+    /* sizes you can tune in one place */
+    const SMALL_GIF = '300px',  BIG_GIF  = '500px';
+    const SMALL_CAM = 'calc(100% - 100px)', BIG_CAM = '100%';
+
+    /* single function sets widths based on sidebar state */
+    function applyLayout(sidebarOpen) {
+      if (sidebarOpen) {                     // sidebar visible
+        leftSide .style.maxWidth = 'calc(100% - 256px)';
+        rightSide.style.maxWidth = 'calc(100% - 256px)';
+        gifImage   .style.maxWidth = SMALL_GIF;
+        webcamImage.style.maxWidth = SMALL_CAM;
+      } else {                               // sidebar collapsed
+        leftSide .style.maxWidth = '100%';
+        rightSide.style.maxWidth = '100%';
+        gifImage   .style.maxWidth = BIG_GIF;
+        webcamImage.style.maxWidth = BIG_CAM;
+      }
+    }
+
+    /* initial pass – assumes the sidebar is **open** on first render */
+    document.addEventListener('DOMContentLoaded', () => {
+      applyLayout(true);            // centre everything at startup
+    });
+
+    /* click handler toggles sidebar and reapplies layout */
+    toggleButton.addEventListener('click', () => {
+      const sidebarOpen = sidebarContainer.style.transform === 'translateX(0%)';
+
+      if (sidebarOpen) { // ► collapse
+        sidebarContainer.style.transform = 'translateX(-100%)';
+        sidebarContainer.style.opacity   = '0';
+        mainContent.classList.remove('ml-64');
+        toggleButton.style.left = '0px';
+      } else {          // ► expand
+        sidebarContainer.style.transform = 'translateX(0%)';
+        sidebarContainer.style.opacity   = '1';
+        mainContent.classList.add   ('ml-64');
+        toggleButton.style.left = '256px';
+      }
+
+      /* now size the images for the **new** state */
+      applyLayout(!sidebarOpen);
     });
 
     // Toggle functions for chart containers
@@ -717,6 +852,97 @@
         co2Chart = drawCO2Chart(co2Chart);                         // Pass the existing chart
         updateSensorData(); // Keep updating the latest data display
     }, 5000); // Update every 5 seconds (adjust as needed)
-  </script>
+
+    // Function to fetch the image from Flask and display it
+    function fetchAndDisplayImage() {
+      fetch('/get_image') // Changed to GET request and /get_image endpoint
+          .then(response => {
+              if (!response.ok) {
+                  if (response.status === 204) {
+                      console.log('No image available yet.');
+                      return null; // Or handle no image case
+                  }
+                  throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json();
+          })
+          .then(data => {
+              if (data && data.image) {
+                  const imgElement = document.getElementById('webcamImage');
+                  imgElement.src = 'data:image/jpeg;base64,' + data.image;
+              }
+          })
+          .catch(error => {
+              console.error('Error fetching image:', error);
+          });
+    }
+
+    // Call this function periodically to load the image from Flask
+    setInterval(fetchAndDisplayImage, 10000); // Fetch every 1 second (adjust as needed)  
+    </script>
+    
+    <script>
+    /* ---------- simple view-switcher ------------------------------------ */
+    const statusSection       = document.getElementById('statusSection');
+    const environmentSection  = document.getElementById('environmentSection');
+    const diseaseDetectionSec = document.getElementById('diseaseDetection');
+
+    const dashLink     = document.querySelector('a[href="#dashboard"]');
+    const diseaseLink  = document.querySelector('a[href="#diseaseDetection"]');
+
+    function showDashboard() {
+      statusSection.classList.remove('hidden');
+      environmentSection.classList.remove('hidden');
+      diseaseDetectionSec.classList.add('hidden');
+      dashLink.classList.add('text-gray-800','border-green-500');
+      diseaseLink.classList.remove('text-gray-800','border-green-500');
+    }
+
+    function showDisease() {
+      statusSection.classList.add('hidden');
+      environmentSection.classList.add('hidden');
+      diseaseDetectionSec.classList.remove('hidden');
+      diseaseLink.classList.add('text-gray-800','border-green-500');
+      dashLink.classList.remove('text-gray-800','border-green-500');
+    }
+
+    dashLink .addEventListener('click', e => {e.preventDefault(); showDashboard();});
+    diseaseLink.addEventListener('click', e => {e.preventDefault(); showDisease();});
+
+    /* optional: honour the URL hash if user reloads on that view */
+    if (location.hash === '#diseaseDetection') { showDisease(); }
+    </script>
+
+
+    <!-- ==== Disease-detection polling === -->
+    <script>
+      const diseaseImg   = document.getElementById('diseaseImg');
+      const diseaseLabel = document.getElementById('diseaseLabel');
+
+      async function fetchPrediction() {
+        try {
+          const res  = await fetch('/latest_prediction');
+          const json = await res.json();
+
+          if (!json.ready) return;                          // nothing yet – keep old UI
+
+          // Update UI
+          diseaseImg.src        = 'data:image/jpeg;base64,' + json.image_b64;
+          diseaseLabel.textContent = json.label;
+        } catch (err) {
+          console.error('Error fetching prediction:', err);
+        }
+      }
+
+      // auto-refresh every 5 s
+      setInterval(fetchPrediction, 5000);
+
+      // manual refresh
+      document.getElementById('forceRefresh').onclick = fetchPrediction;
+
+      // first call on page load
+      fetchPrediction();
+    </script>
+
 </body>
 </html>

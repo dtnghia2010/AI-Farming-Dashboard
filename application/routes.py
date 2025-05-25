@@ -2,8 +2,10 @@ from flask import render_template, request, jsonify
 from datetime import datetime, timedelta
 from application import app, db  # Import app and db from __init__.py
 from application.models import SensorData
+# from flask_cors import CORS
 
 points = 20
+latest_image = None
 
 @app.route('/')
 def plant():
@@ -58,21 +60,7 @@ def latest_data():
     else:
         return jsonify({'error': 'No data available'}), 404
 
-# @app.route('/temperature_data', methods=['GET'])
-# def temperature_data():
-#     # Calculate the timestamp for 30 minutes ago
-#     thirty_minutes_ago = datetime.utcnow() - timedelta(minutes=30)
-    
-#     # Query the temperature data for the last 30 minutes
-#     data = SensorData.query.filter(SensorData.timestamp >= thirty_minutes_ago).order_by(SensorData.timestamp.asc()).all()
-    
-#     # Format data to send to the frontend (time and temperature)
-#     temperatures = [{'timestamp': d.timestamp, 'temperature': d.temperature} for d in data]
-    
-#     if temperatures:
-#         return jsonify(temperatures)
-#     else:
-#         return jsonify({'error': 'No data available'}), 404
+
 
 @app.route('/temperature_data', methods=['GET'])
 def temperature_data():
@@ -140,3 +128,59 @@ def co2_data():
         return jsonify(co2_levels)
     else:
         return jsonify({'error': 'No data available'}), 404
+
+
+@app.route('/upload', methods=['POST'])
+def upload_image():
+    global latest_image
+    data = request.get_json()
+    if 'image' not in data:
+        return jsonify({'error': 'No image data received'}), 400
+    latest_image = data['image']
+    return jsonify({'message': 'Image received'}), 200
+
+@app.route('/get_image', methods=['GET'])
+def get_image():
+    global latest_image
+    if latest_image:
+        return jsonify({'image': latest_image}), 200
+    else:
+        return jsonify({'error': 'No image available'}), 204 # No Content
+
+
+# --- Disease-detection state (keep simple & in-memory for now) -------------
+latest_pred_img_b64 = None     # full base-64 string, no header
+latest_pred_label   = "Awaiting first prediction…"
+
+@app.route('/upload_image_and_prediction', methods=['POST'])
+def upload_image_and_prediction():
+    """
+    Raspberry Pi POSTs:
+        { "image": "<base64-string>", "prediction": "<label>" }
+    """
+    global latest_pred_img_b64, latest_pred_label
+    data = request.get_json(silent=True) or {}
+
+    img = data.get("image")
+    label = data.get("prediction")
+    if not img or not label:
+        return jsonify({'error': 'Both image and prediction are required'}), 400
+
+    latest_pred_img_b64 = img
+    latest_pred_label   = label
+    return jsonify({'status': 'received'}), 200
+
+
+@app.route('/latest_prediction', methods=['GET'])
+def latest_prediction():
+    """
+    Dashboard polls this every few seconds.
+    """
+    if latest_pred_img_b64 is None:
+        return jsonify({'ready': False}), 200
+
+    return jsonify({
+        'ready'     : True,
+        'image_b64' : latest_pred_img_b64,
+        'label'     : latest_pred_label,
+    }), 200
