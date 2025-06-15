@@ -165,7 +165,7 @@
       <!-- </div> -->
     </div>
 
-    <section id="statusSection" class="px-6">
+    <section id="statusSection" class="hidden">
       <!-- heading bar -->
       <div class="bg-green-500 text-white p-4 rounded-md mb-6">
         <h2 class="text-2xl font-semibold text-center">
@@ -464,6 +464,15 @@
              </button>
           </div>
        </div>
+
+      <h2>Try CV model</h2>
+      <input type="file" id="imageInput" accept="image/*" />
+      <br><br>
+      <img id="preview" src="" alt="Preview" style="max-width: 300px; display: none;" />
+      <br><br>
+      <button onclick="predictDisease()">Predict Disease</button>
+      <br><br>
+      <div id="predictionResult"></div>
     </section>
 </main>
   
@@ -891,7 +900,7 @@
     const diseaseLink  = document.querySelector('a[href="#diseaseDetection"]');
 
     function showDashboard() {
-      statusSection.classList.remove('hidden');
+      // statusSection.classList.remove('hidden');
       environmentSection.classList.remove('hidden');
       diseaseDetectionSec.classList.add('hidden');
       dashLink.classList.add('text-gray-800','border-green-500');
@@ -942,6 +951,49 @@
 
       // first call on page load
       fetchPrediction();
+    </script>
+
+    <script>
+      function predictDisease() {
+        const input = document.getElementById("imageInput");
+        const file = input.files[0];
+
+        if (!file) {
+          alert("Please select an image.");
+          return;
+        }
+
+        // Preview the image
+        const reader = new FileReader();
+        reader.onload = function () {
+          const base64Image = reader.result.split(',')[1];  // Strip the data:image/... prefix
+          document.getElementById("preview").src = reader.result;
+          document.getElementById("preview").style.display = 'block';
+
+          // Send POST to Flask
+          fetch('/predict_disease', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: base64Image })
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.prediction) {
+                document.getElementById("predictionResult").innerHTML =
+                  `<strong>Predicted Disease:</strong> ${data.prediction}`;
+              } else {
+                document.getElementById("predictionResult").innerHTML =
+                  `<span style="color:red;">Error: ${data.error}</span>`;
+              }
+            })
+            .catch(err => {
+              console.error(err);
+              document.getElementById("predictionResult").innerText = "Prediction failed.";
+            });
+        };
+
+        reader.readAsDataURL(file); // Trigger base64 conversion
+      }
     </script>
 
 </body>

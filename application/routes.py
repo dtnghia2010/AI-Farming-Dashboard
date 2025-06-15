@@ -4,8 +4,43 @@ from application import app, db  # Import app and db from __init__.py
 from application.models import SensorData
 # from flask_cors import CORS
 
+import torch
+import torch.nn as nn
+from torchvision import models, transforms
+from PIL import Image
+import io
+import base64
+
 points = 20
 latest_image = None
+
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+model = models.efficientnet_b0(pretrained=False)
+model.classifier = nn.Sequential(
+    nn.Dropout(p=0.5),
+    nn.Linear(model.classifier[1].in_features, 9)
+)
+model.load_state_dict(torch.load("application/pretrained-efficientnet_model.pth", map_location=device))
+model.to(device)
+model.eval()
+
+transform = transforms.Compose([
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                         std=[0.229, 0.224, 0.225])
+])
+
+class_names = [
+    "bacterial", "downy",
+    "healthy", "powdery", "septoria", "viral", "wilt"
+]
+
+
+
 
 @app.route('/')
 def plant():
@@ -184,3 +219,28 @@ def latest_prediction():
         'image_b64' : latest_pred_img_b64,
         'label'     : latest_pred_label,
     }), 200
+
+
+@app.route('/predict_disease', methods=['POST'])
+def predict_disease():
+    data = request.get_json()
+    if 'image' not in data:
+        return jsonify({'error': 'Image is required'}), 400
+
+    try:
+        # Decode base64 image to PIL Image
+        image_data = base64.b64decode(data['image'])
+        image = Image.open(io.BytesIO(image_data)).convert('RGB')
+
+        # Apply transforms
+        input_tensor = transform(image).unsqueeze(0).to(device)
+
+        # Predict
+        with torch.no_grad():
+            output = model(input_tensor)
+            _, pred = torch.max(output, 1)
+            label = class_names[pred.item()]
+
+        return jsonify({'prediction': label}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
